@@ -1,0 +1,49 @@
+{
+  "title": "Producer Dashboard",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Jobs Submitted / sec",
+      "targets": [
+        {
+          "expr": "rate(jobs_submitted_total[5m])",
+          "legendFormat": "submitted/sec"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP Request Rate",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total[5m])",
+          "legendFormat": "{{endpoint}} {{http_status}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP Latency p90 by Endpoint",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.9, sum(rate(http_request_duration_seconds_bucket[5m])) by (method, endpoint, le))",
+          "legendFormat": "{{method}} {{endpoint}}"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Redis Command Latency p95",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(redis_command_latency_seconds_bucket[5m])) by (command, le))",
+          "legendFormat": "{{command}}"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "30s"
+}

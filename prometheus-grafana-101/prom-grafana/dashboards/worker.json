@@ -1,0 +1,66 @@
+{
+  "title": "Worker Dashboard",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Jobs Processed / sec",
+      "targets": [
+        {
+          "expr": "rate(jobs_processed_total[5m])",
+          "legendFormat": "processed/sec"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Jobs Failed by Reason",
+      "targets": [
+        {
+          "expr": "rate(jobs_failed_total[5m])",
+          "legendFormat": "{{reason}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Job Latency p50 / p90 / p99",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum(rate(job_latency_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.9, sum(rate(job_latency_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p90"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(job_latency_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "type": "gauge",
+      "title": "Queue Depth",
+      "targets": [
+        {
+          "expr": "redis_queue_depth"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Redis Command Latency p95",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(redis_command_latency_seconds_bucket[5m])) by (command, le))",
+          "legendFormat": "{{command}}"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "30s"
+}

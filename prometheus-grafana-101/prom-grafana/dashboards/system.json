@@ -1,0 +1,56 @@
+{
+  "title": "System Overview",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Jobs Submitted vs Processed",
+      "targets": [
+        {
+          "expr": "rate(jobs_submitted_total[5m])",
+          "legendFormat": "submitted"
+        },
+        {
+          "expr": "rate(jobs_processed_total[5m])",
+          "legendFormat": "processed"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Jobs Failed",
+      "targets": [
+        {
+          "expr": "rate(jobs_failed_total[5m])",
+          "legendFormat": "{{reason}}"
+        }
+      ]
+    },
+    {
+      "type": "gauge",
+      "title": "Queue Depth",
+      "targets": [
+        {
+          "expr": "redis_queue_depth"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "End-to-End Latency (p90)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.9, sum(rate(job_latency_seconds_bucket[5m])) by (le))",
+          "legendFormat": "job latency p90"
+        },
+        {
+          "expr": "histogram_quantile(0.9, sum(rate(http_request_duration_seconds_bucket[5m])) by (method, endpoint, le))",
+          "legendFormat": "http latency p90"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "30s"
+}
