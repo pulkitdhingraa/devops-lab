@@ -1,4 +1,4 @@
-# -- Terraform Related --
+# -- Terraform --
 *.tfstate
 *.tfstate.*
 *.tfvars
@@ -8,3 +8,14 @@
 
 # -- Secrets --
 *.pem
+*.crt
+
+# -- Python -- 
+venv/
+__pycache__/
+*.pyc
+
+# -- Golang -- 
+*.exe
+*.so
+*.dylib
