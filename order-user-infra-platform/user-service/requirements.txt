@@ -1,0 +1,5 @@
+Flask
+pymongo
+Flask-PyMongo
+pydantic
+pydantic[email]
