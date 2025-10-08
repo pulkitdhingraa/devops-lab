@@ -1,0 +1,10 @@
+# -- Terraform Related --
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+.terraform/
+.terraform.lock.hcl
+
+# -- Secrets --
+*.pem
