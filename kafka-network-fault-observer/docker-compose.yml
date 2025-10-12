@@ -1,0 +1,99 @@
+version: "3.8"
+
+services:
+  zookeeper:
+    image: bitnamilegacy/zookeeper:3.7.0
+    container_name: zookeeper
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: yes
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    
+  kafka1:
+    build:
+      context: .
+      dockerfile: Dockerfile.kafka
+    container_name: kafka1
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_CFG_BROKER_ID: 1
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    cap_add:
+      - NET_ADMIN
+    
+  kafka2:
+    build:
+      context: .
+      dockerfile: Dockerfile.kafka
+    container_name: kafka2
+    depends_on:
+      - zookeeper
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_CFG_BROKER_ID: 2
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_LISTENERS: PLAINTEXT://0.0.0.0:9093
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9093
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    cap_add:
+      - NET_ADMIN
+  
+  kafka3:
+    build:
+      context: .
+      dockerfile: Dockerfile.kafka
+    container_name: kafka3
+    depends_on:
+      - zookeeper
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_CFG_BROKER_ID: 3
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_LISTENERS: PLAINTEXT://0.0.0.0:9094
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9094
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    cap_add:
+      - NET_ADMIN
+  
+  nginx1: 
+    image: nginx:latest
+    container_name: nginx1
+    depends_on: 
+      - kafka1
+    ports:
+      - "19092:19092"
+    volumes:
+      - ./nginx/nginx1.conf:/etc/nginx/nginx.conf:ro
+  
+  nginx2: 
+    image: nginx:latest
+    container_name: nginx2
+    depends_on: 
+      - kafka2
+    ports:
+      - "19093:19093"
+    volumes:
+      - ./nginx/nginx2.conf:/etc/nginx/nginx.conf:ro
+    
+  nginx3: 
+    image: nginx:latest
+    container_name: nginx3
+    depends_on: 
+      - kafka3
+    ports:
+      - "19094:19094"
+    volumes:
+      - ./nginx/nginx3.conf:/etc/nginx/nginx.conf:ro
